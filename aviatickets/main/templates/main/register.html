@@ -1,0 +1,13 @@
+{% extends 'main/layout.html' %}
+{%block title %}Регистрация{%endblock%}
+{%block content%}
+<div class="container">
+    <div class="shadow p-4 mb-5 bg-body rounded container">
+        <form method="POST" action="">
+            {% csrf_token %}
+            {{form.as_p}}
+            <button type="submit" class="btn btn-outline-primary me-2">Зарегистрироваться</button>
+        </form>
+    </div>
+</div>
+{%endblock%}
