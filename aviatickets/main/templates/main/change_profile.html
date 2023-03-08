@@ -1,0 +1,13 @@
+{% extends 'main/layout.html' %} 
+{%block title%}Изменение профиля{%endblock%} 
+{%block content%}
+<div class="shadow p-4 mb-5 bg-body rounded container">
+  <h1 class="text-center">Изменить профиль</h1>
+  <form action="" method="post" enctype="multipart/form-data">
+    {% csrf_token %} 
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-success">Изменить</button>
+    <span>{{error}}</span>
+  </form>
+</div>
+{%endblock%}
