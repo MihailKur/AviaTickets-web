@@ -13,6 +13,9 @@ def index(response):
 def aboutUs(response):
     return render(response, 'main/about.html')
 
+def sales(response):
+    return render(response, 'main/sales.html')
+
 def profile(response):
     user_info = User.objects.all()
     return render(response, 'main/cabinet.html',{'user_info':user_info})
