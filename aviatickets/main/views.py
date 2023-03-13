@@ -1,8 +1,12 @@
+from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.views.generic import ListView
 
 from django.contrib import messages
+from django.db.models import Q
 
 from .forms import *
 
@@ -74,3 +78,17 @@ def logoutuser(request):
     logout(request)
     messages.success(request, ("Вы вышли из аккаунта"))
     return redirect("home")
+
+@staff_member_required
+def create_ticket(request):
+    submitted = False
+    if request.method == "POST":
+        form = ticketForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect("/create?submitted=True")
+    else:
+        form = ticketForm
+        if "submitted" in request.GET:
+            submitted = True
+    return render(request, "main/create.html", {"form": form, "submitted": submitted})

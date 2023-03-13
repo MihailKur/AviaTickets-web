@@ -1,8 +1,9 @@
+import datetime
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
-from django.contrib.auth import password_validation
+from .models import *
 
 username_validator = UnicodeUsernameValidator()
 
@@ -67,4 +68,29 @@ class RegisterUserForm(UserCreationForm):
             "password1": "Пароль",
             "password2": "Подтверждение пароля",
         }
+
+
+class DateInput(forms.DateInput):
+    input_type = 'date'
     
+    
+class ticketForm(forms.ModelForm):
+    time_origin = forms.TimeField(label="Время вылета",required=False, widget=DateInput(attrs={'type': 'time'}),initial=datetime.date.today(), localize=True)
+    time_dest = forms.TimeField(label="Время прилета",required=False, widget=DateInput(attrs={'type': 'time'}),initial=datetime.date.today(), localize=True)
+    date_origin = forms.DateField(label="Время вылета",required=False, widget=DateInput(attrs={'type': 'date'}),initial=datetime.date.today(), localize=True)
+    date_dest = forms.DateField(label="Время прилета",required=False, widget=DateInput(attrs={'type': 'date'}),initial=datetime.date.today(), localize=True)
+    class Meta:
+        model = Tickets
+        fields = '__all__'
+        labels = {
+            "name_origin": "Город вылета",
+            "name_dest": "Город прилета",
+            "name_origin_aero": "Аэропорт вылета",
+            "name_dest_aero": "Аэропорт прибытия",
+            "time_origin": "Время и дата вылета",
+            "time_dest": "Время и дата прилета",
+            "date_origin": "Время и дата прилета",
+            "date_dest": "Время и дата прилета",
+            "ticket_price": "Цена билета",
+            "type_of_flight": "Тип класса",
+        }

@@ -33,6 +33,9 @@
             {% if request.user.is_authenticated %}
             <a type="button" class="btn btn-outline-primary me-2" href="{% url 'logout'%}">Выйти</a>
             {%endif%}
+            {% if request.user.is_staff and request.user.is_authenticated %}
+            <a href="{% url 'create' %}"><button type="button" class="btn btn-outline-primary me-2">Создать билет</button></a>
+            {% endif %}
             {% if request.user.is_anonymous %}
             <a type="button" class="btn btn-outline-primary me-2" href="{% url 'login'%}">Войти</a>
             <a type="button" class="btn btn-outline-primary me-2" href="{% url 'registry'%}">Регистрация</a>
