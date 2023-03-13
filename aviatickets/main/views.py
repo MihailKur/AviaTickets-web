@@ -92,3 +92,11 @@ def create_ticket(request):
         if "submitted" in request.GET:
             submitted = True
     return render(request, "main/create.html", {"form": form, "submitted": submitted})
+
+def search_ticket(request):
+    if request.method == "GET":
+        error = None
+        tickets = Tickets.objects.filter(name_origin = request.GET["origin"],name_dest = request.GET["dest"], date_origin = request.GET["date_travel"])
+        if not tickets:
+            error = "No tickets"
+        return render(request, "main/search.html", {"tickets": tickets, "error": error})

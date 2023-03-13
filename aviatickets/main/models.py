@@ -22,7 +22,7 @@ class Tickets(models.Model):
     type_of_flight = models.CharField("Тип перелета", choices=TYPE_OF_FLIGHT, max_length=100)
 
     def __str__(self):
-        return self.name
+        return self.name_origin
 
     def get_absolute_url(self):
         return reverse("product", kwargs={"pk": self.pk})
