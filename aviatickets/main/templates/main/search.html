@@ -1,8 +1,77 @@
+{% extends 'main/layout.html' %}
+{%block title%}Результаты поиска{%endblock%}
+{%block content%}
 {% if error %}
     <p>{{error}}</p>
 {% else %}
 {% for tick in tickets %}
-<p>{{tick.name_origin}}</p>
-<p>{{tick.ticket_price}}</p>
+    <div class="row d-flex justify-content-center">
+        <div class="col-sm-9">
+          <div class="card mb-3">
+            <div class="card-body">
+              <h5 class="card-title">{{tick.name_origin}} · · · · · · · · · · · · · > {{tick.name_dest}}</h5>
+              <p class="card-text">{{tick.name_origin_aero}} {{tick.name_dest_aero}}</p>
+              <p class="card-text">Время и дата вылета: {{tick.date_origin}},<span>&#160;&#160;</span>{{tick.time_origin}}</p>
+              <p class="card-text">Время и дата прилета: {{tick.date_dest}},<span>&#160;&#160;</span>{{tick.time_dest}}</p>
+              <p class="card-text">Тип билета: {{tick.type_of_flight}}</p>
+              <p class="card-text">Цена: {{tick.ticket_price}}</p>
+              <a href="#ticket-modal-{{ tick.id }}" class="btn btn-outline-info pd-1" data-bs-toggle="modal">Подтвердить</a>
+            </div>
+          </div>
+        </div>
+    </div>
+      <div class="modal fade" id="ticket-modal-{{ tick.id }}" tabindex="-1" role="dialog" aria-labelledby="ticket-modal-label-{{ tick.id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalAccept">Проверьте данные о брони</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              <p class="modal-title" id="ticket-modal-label-{{ tick.id }}">{{ tick.name_origin }} - {{ tick.name_dest }}</p>
+              <p>{{ tick.name_origin_aero }} {{ tick.name_dest_aero }}</p>
+              <p>Время и дата вылета: {{ tick.date_origin }}, {{ tick.time_origin }}</p>
+              <p>Время и дата прилета: {{ tick.date_dest }}, {{ tick.time_dest }}</p>
+              <p>Тип билета: {{ tick.type_of_flight }}</p>
+              <p>Цена: {{ tick.ticket_price }}</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Выбрать другой билет</button>
+                <button type="button" class="btn btn-outline-info pd-1" data-bs-toggle="modal" data-bs-target="#modalAllGood" data-bs-dismiss="modal">Все верно</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="modal fade" id="modalAllGood" aria-hidden="true" aria-labelledby="examplemodalAllGood" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title" id="modalAllGood">Бронь оформлена!</h5>
+              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+              Ваша бронь успешно оформлена! В скором времени наша служба с вами свяжется для оплаты.
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script>
+        // Обработчик события hidden.bs.modal
+        $('#modalAllGood').click(function() {
+            // Закрываем все модальные окна
+            $('.modal').modal('hide');
+          });
+          
+          // Обработчик события hidden.bs.modal
+          $('.modal').on('hidden.bs.modal', function (e) {
+            // Восстанавливаем скролл страницы
+            $('body').css('overflow', 'auto');
+          });
+      </script>
+      
 {%endfor%}
 {%endif%}
+{%endblock%}

@@ -1,17 +1,33 @@
 {% extends 'main/layout.html' %}
 {%block title%}Главная страница{%endblock%}
 {%block content%}
-    <div class="container p-3 mb-2 bg-info text-dark">
-        <h1>Добро пожаловать!</h1>
+    <div class="container p-3 mb-2 mt-5 bg-light border border-primary text-dark rounded">
+        <center><h1>Добро пожаловать!</h1></center>
         <h2>Пожалуйста, заполните следующие поля:</h2>
         <form action="{% url 'search' %}" method="get">
             <div class="form-group">
               <label>Город отправления</label>
-              <input class="form-control" aria-describedby="emailHelp" name="origin">
+              <select name="origin" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                <option selected>Выберите город отправления</option>
+                <option>Москва</option>
+                <option>Екатеринбург</option>
+                <option>Санкт-Петербург</option>
+                <option>Нижний Новгород</option>
+                <option>Астана</option>
+                <option>Сочи</option>
+              </select>
             </div>
             <div class="form-group">
               <label for="exampleInputPassword1">Город прибытия</label>
-              <input class="form-control" id="exampleInputPassword1" name="dest">
+              <select name="dest" class="form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                <option selected>Выберите город прибытия</option>
+                <option>Москва</option>
+                <option>Екатеринбург</option>
+                <option>Санкт-Петербург</option>
+                <option>Нижний Новгород</option>
+                <option>Астана</option>
+                <option>Сочи</option>
+              </select>
             </div>
             <div class="form-group row">
                 <label for="example-datetime-local-input" class="col-xs-2 col-form-label">Дата вылета</label>
@@ -19,7 +35,7 @@
                   <input class="form-control" type="date" id="example-datetime-local-input" name="date_travel">
                 </div>
             </div>
-            <button type="submit" class="btn btn-outline-primary pd-1">Подтвердить</button>
+            <button type="submit" class="btn btn-outline-primary mt-3">Подтвердить</button>
           </form>
     </div>
 {%endblock%}

@@ -9,9 +9,18 @@ TYPE_OF_FLIGHT = (
     ('Первый класс', 'Первый класс')
 )
 
+TYPE_OF_CITY = (
+    ('Москва', 'Москва'),
+    ('Екатеринбург', 'Екатеринбург'),
+    ('Санкт-Петербург', 'Санкт-Петербург'),
+    ('Нижний Новгород', 'Нижний Новгород'),
+    ('Астана', 'Астана'),
+    ('Сочи', 'Сочи')
+)
+
 class Tickets(models.Model):
-    name_origin = models.CharField("Город вылета", max_length=100)
-    name_dest = models.CharField("Город прилета", max_length=100)
+    name_origin = models.CharField("Город вылета",choices=TYPE_OF_CITY, max_length=100)
+    name_dest = models.CharField("Город прилета", choices=TYPE_OF_CITY, max_length=100)
     name_origin_aero = models.CharField("Аэропорт вылета", max_length=100)
     name_dest_aero = models.CharField("Аэропорт прилета", max_length=100)
     time_origin = models.TimeField("Время и дата вылета")
