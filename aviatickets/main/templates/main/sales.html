@@ -1,0 +1,48 @@
+{% extends 'main/layout.html' %}
+{% block title %}Мои бронирования{% endblock %}
+{% block content %}
+{% if waste %}
+    <center><h1>{{ waste }}</h1></center>
+{% else %}
+<center><p>Количество ваших броней за все время: {{ user_sales.count }}</p></center>
+{% for sale in user_sales %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title">{{ sale.ticket.name_origin }} · · · · · · · · · · · · · > {{ sale.ticket.name_dest }}</h5>
+          <p class="card-text">Аэропорт вылета: {{ sale.ticket.name_origin_aero }}</p>
+          <p class="card-text">Аэропорт прилета: {{ sale.ticket.name_dest_aero }}</p>
+          <p class="card-text">Дата и время вылета: {{ sale.ticket.time_origin }} {{ sale.ticket.date_origin }}</p>
+          <p class="card-text">Дата и время прилета: {{ sale.ticket.time_dest }} {{ sale.ticket.date_dest }}</p>
+          <p class="card-text">Цена билета: {{ sale.ticket.ticket_price }}</p>
+          <p class="card-text">Тип перелета: {{ sale.ticket.type_of_flight }}</p>
+          <a href="#ticket-modal-{{ sale.id }}" class="btn btn-outline-danger pd-1" data-bs-toggle="modal">Отменить бронь</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="modal fade" id="ticket-modal-{{ sale.id }}" tabindex="-1" role="dialog" aria-labelledby="ticket-modal-label-{{ tick.id }}" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+            <h5 class="modal-title" id="modalAccept">Проверьте данные о брони</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <p class="modal-title">Вы действиетльно хотите отменить бронь?</p>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Я передумал</button>
+            <form method="post">
+             {% csrf_token %}
+             <input type="hidden" name="sale_id" value="{{ sale.id }}">
+             <button type="submit" class="btn btn-outline-danger pd-1" data-bs-toggle="modal" data-bs-target="#modalAllGood" data-bs-dismiss="modal" name="UsersSale">Отменить бронь</button>
+            </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endfor %}
+{% endif %}
+{% endblock %}
