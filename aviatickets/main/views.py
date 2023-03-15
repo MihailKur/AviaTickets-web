@@ -20,9 +20,10 @@ def aboutUs(response):
 def sales(response):
     return render(response, 'main/sales.html')
 
-def profile(response):
+def profile(request):
     user_info = User.objects.all()
-    return render(response, 'main/cabinet.html',{'user_info':user_info})
+    user_sales_count = UsersSales.objects.filter(user=request.user)
+    return render(request, 'main/cabinet.html',{'user_info':user_info, "user_sales_count": user_sales_count})
 
 @login_required(login_url="/")
 def change_profile(request):
@@ -98,5 +99,26 @@ def search_ticket(request):
         error = None
         tickets = Tickets.objects.filter(name_origin = request.GET["origin"],name_dest = request.GET["dest"], date_origin = request.GET["date_travel"])
         if not tickets:
-            error = "No tickets"
+            error = "Билетов на данную дату нет!"
         return render(request, "main/search.html", {"tickets": tickets, "error": error})
+    if request.method == "POST":
+        user_id = request.POST["user_id"]
+        ticket_id = request.POST["ticket_id"]
+        sale = UsersSales.objects.create(user_id = user_id, ticket_id = ticket_id)
+        sale.save()
+        messages.success(request,("Ваша бронь успешно оформлена! В скором времени наша служба с вами свяжется для оплаты."))
+        return redirect("home")
+    
+def search_sales(request):
+    if request.method == "POST":
+        userssale_id = request.POST["sale_id"]
+        ticket_delete = UsersSales.objects.get(id = userssale_id)
+        if ticket_delete.user == request.user:
+            ticket_delete.delete()
+            messages.success(request,("Ваша бронь успешно отменена!"))
+            return redirect("sales")
+    user_sales = UsersSales.objects.filter(user=request.user)
+    waste = None
+    if not user_sales:
+        waste = "У вас пока нет ни одной брони!"
+    return render(request, "main/sales.html", {"user_sales": user_sales, "waste": waste, "user": request.user})

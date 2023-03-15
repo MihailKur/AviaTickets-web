@@ -2,7 +2,7 @@
 {%block title%}Результаты поиска{%endblock%}
 {%block content%}
 {% if error %}
-    <p>{{error}}</p>
+    <center><h1>{{error}}</h1></center>
 {% else %}
 {% for tick in tickets %}
     <div class="row d-flex justify-content-center">
@@ -15,7 +15,11 @@
               <p class="card-text">Время и дата прилета: {{tick.date_dest}},<span>&#160;&#160;</span>{{tick.time_dest}}</p>
               <p class="card-text">Тип билета: {{tick.type_of_flight}}</p>
               <p class="card-text">Цена: {{tick.ticket_price}}</p>
+              {% if user.is_authenticated%}
               <a href="#ticket-modal-{{ tick.id }}" class="btn btn-outline-info pd-1" data-bs-toggle="modal">Подтвердить</a>
+              {%else%}
+              <a href="{% url 'login' %}" class="btn btn-outline-info pd-1">Подтвердить</a>
+              {%endif%}
             </div>
           </div>
         </div>
@@ -37,41 +41,16 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Выбрать другой билет</button>
-                <button type="button" class="btn btn-outline-info pd-1" data-bs-toggle="modal" data-bs-target="#modalAllGood" data-bs-dismiss="modal">Все верно</button>
+                <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+                <input type="hidden" name="ticket_id" value="{{ tick.id }}">
+                <button type="submit" class="btn btn-outline-info pd-1" data-bs-toggle="modal" data-bs-target="#modalAllGood" data-bs-dismiss="modal" name="UsersSale">Все верно</button>
+                </form>
             </div>
           </div>
         </div>
       </div>
-      <div class="modal fade" id="modalAllGood" aria-hidden="true" aria-labelledby="examplemodalAllGood" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="modalAllGood">Бронь оформлена!</h5>
-              <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-              Ваша бронь успешно оформлена! В скором времени наша служба с вами свяжется для оплаты.
-            </div>
-            <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
-            </div>
-          </div>
-        </div>
-      </div>
-      <script>
-        // Обработчик события hidden.bs.modal
-        $('#modalAllGood').click(function() {
-            // Закрываем все модальные окна
-            $('.modal').modal('hide');
-          });
-          
-          // Обработчик события hidden.bs.modal
-          $('.modal').on('hidden.bs.modal', function (e) {
-            // Восстанавливаем скролл страницы
-            $('body').css('overflow', 'auto');
-          });
-      </script>
-      
 {%endfor%}
 {%endif%}
 {%endblock%}

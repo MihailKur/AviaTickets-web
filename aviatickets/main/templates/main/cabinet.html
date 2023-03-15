@@ -15,7 +15,7 @@
                 <a type="button" class="btn btn-primary mb-3" href="{% url 'change_profile' %}">
                   Изменить профиль
                 </a>
-                <a type="button" class="btn btn-primary" href="{% url 'change_profile' %}">
+                <a type="button" class="btn btn-primary" href="{% url 'sales' %}">
                   Ваши брони
                 </a>
               </div>
@@ -25,7 +25,7 @@
                   <p class="text-muted mb-0"></p>
                 </div>
                 <div class="px-3">
-                  <p class="h5">851</p>
+                  <p class="h5">{{user_sales_count.count}}</p>
                   <p class="text-muted mb-0">Количество броней</p>
                 </div>
                 <div>

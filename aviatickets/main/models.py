@@ -44,6 +44,6 @@ class Tickets(models.Model):
 
 
 class UsersSales(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    sale = models.ForeignKey(Tickets, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE)
 
