@@ -1,13 +1,9 @@
 from django.conf import settings
+from django.contrib.auth.admin import User
 from django.db import models
 from django.urls import reverse
-from django.contrib.auth.admin import User
 
-TYPE_OF_FLIGHT = (
-    ('Эконом', 'Эконом'),
-    ('Бизнес', 'Бизнес'),
-    ('Первый класс', 'Первый класс')
-)
+TYPE_OF_FLIGHT = (('Эконом', 'Эконом'), ('Бизнес', 'Бизнес'), ('Первый класс', 'Первый класс'))
 
 TYPE_OF_CITY = (
     ('Москва', 'Москва'),
@@ -15,11 +11,12 @@ TYPE_OF_CITY = (
     ('Санкт-Петербург', 'Санкт-Петербург'),
     ('Нижний Новгород', 'Нижний Новгород'),
     ('Астана', 'Астана'),
-    ('Сочи', 'Сочи')
+    ('Сочи', 'Сочи'),
 )
 
+
 class Tickets(models.Model):
-    name_origin = models.CharField("Город вылета",choices=TYPE_OF_CITY, max_length=100)
+    name_origin = models.CharField("Город вылета", choices=TYPE_OF_CITY, max_length=100)
     name_dest = models.CharField("Город прилета", choices=TYPE_OF_CITY, max_length=100)
     name_origin_aero = models.CharField("Аэропорт вылета", max_length=100)
     name_dest_aero = models.CharField("Аэропорт прилета", max_length=100)
@@ -46,4 +43,3 @@ class Tickets(models.Model):
 class UsersSales(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     ticket = models.ForeignKey(Tickets, on_delete=models.CASCADE)
-

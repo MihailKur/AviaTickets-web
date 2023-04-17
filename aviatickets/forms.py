@@ -1,8 +1,10 @@
 import datetime
+
 from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from django.contrib.auth.validators import UnicodeUsernameValidator
+
 from .models import *
 
 username_validator = UnicodeUsernameValidator()
@@ -18,38 +20,30 @@ class RegisterUserForm(UserCreationForm):
         help_text=(''),
         validators=[username_validator],
         error_messages={'unique': ("Такой пользователь существует")},
-        widget=forms.TextInput(attrs={'class': 'form-control'})
+        widget=forms.TextInput(attrs={'class': 'form-control'}),
     )
     password1 = forms.CharField(
-        label=('Пароль'),
-        widget=(forms.PasswordInput(attrs={'class': 'form-control'})),
-        help_text=''
+        label=('Пароль'), widget=(forms.PasswordInput(attrs={'class': 'form-control'})), help_text=''
     )
     password2 = forms.CharField(
-        label=('Подтверждение пароля'), 
+        label=('Подтверждение пароля'),
         widget=forms.PasswordInput(attrs={'class': 'form-control'}),
         help_text=('Введите пароль повторно'),
     )
     email = forms.EmailField(
         label="Email",
         required=True,
-        widget=forms.EmailInput(
-            attrs={"class": "form-control", "placeholder": "Введите email"}
-        ),
+        widget=forms.EmailInput(attrs={"class": "form-control", "placeholder": "Введите email"}),
     )
     first_name = forms.CharField(
         label="Имя",
         required=True,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Введите имя"}
-        )
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите имя"}),
     )
     last_name = forms.CharField(
         label="Фамилия",
         required=True,
-        widget=forms.TextInput(
-            attrs={"class": "form-control", "placeholder": "Введите фамилию"}
-        ),
+        widget=forms.TextInput(attrs={"class": "form-control", "placeholder": "Введите фамилию"}),
     )
 
     class Meta:
@@ -72,13 +66,38 @@ class RegisterUserForm(UserCreationForm):
 
 class DateInput(forms.DateInput):
     input_type = 'date'
-    
-    
+
+
 class ticketForm(forms.ModelForm):
-    time_origin = forms.TimeField(label="Время вылета",required=False, widget=DateInput(attrs={'type': 'time'}),initial=datetime.date.today(), localize=True)
-    time_dest = forms.TimeField(label="Время прилета",required=False, widget=DateInput(attrs={'type': 'time'}),initial=datetime.date.today(), localize=True)
-    date_origin = forms.DateField(label="Время вылета",required=False, widget=DateInput(attrs={'type': 'date'}),initial=datetime.date.today(), localize=True)
-    date_dest = forms.DateField(label="Время прилета",required=False, widget=DateInput(attrs={'type': 'date'}),initial=datetime.date.today(), localize=True)
+    time_origin = forms.TimeField(
+        label="Время вылета",
+        required=False,
+        widget=DateInput(attrs={'type': 'time'}),
+        initial=datetime.date.today(),
+        localize=True,
+    )
+    time_dest = forms.TimeField(
+        label="Время прилета",
+        required=False,
+        widget=DateInput(attrs={'type': 'time'}),
+        initial=datetime.date.today(),
+        localize=True,
+    )
+    date_origin = forms.DateField(
+        label="Время вылета",
+        required=False,
+        widget=DateInput(attrs={'type': 'date'}),
+        initial=datetime.date.today(),
+        localize=True,
+    )
+    date_dest = forms.DateField(
+        label="Время прилета",
+        required=False,
+        widget=DateInput(attrs={'type': 'date'}),
+        initial=datetime.date.today(),
+        localize=True,
+    )
+
     class Meta:
         model = Tickets
         fields = '__all__'

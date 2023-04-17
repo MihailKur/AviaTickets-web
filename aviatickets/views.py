@@ -1,32 +1,33 @@
-from django.http import HttpResponseRedirect
-from django.shortcuts import render, redirect
+from django.contrib import messages
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-from django.contrib.admin.views.decorators import staff_member_required
-from django.views.generic import ListView
-
-from django.contrib import messages
-from django.db.models import Q
+from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
+from django.shortcuts import redirect, render
 
 from .forms import *
 
 
-def index(response):
-    return render(response, 'main/index.html')
+def index(request: HttpRequest) -> HttpResponse:
+    return render(request, 'main/index.html')
 
-def aboutUs(response):
-    return render(response, 'main/about.html')
 
-def sales(response):
-    return render(response, 'main/sales.html')
+def about_us(request: HttpRequest) -> HttpResponse:
+    return render(request, 'main/about.html')
 
-def profile(request):
+
+def sales(request: HttpRequest) -> HttpResponse:
+    return render(request, 'main/sales.html')
+
+
+def profile(request: HttpRequest) -> HttpResponse:
     user_info = User.objects.all()
     user_sales_count = UsersSales.objects.filter(user=request.user)
-    return render(request, 'main/cabinet.html',{'user_info':user_info, "user_sales_count": user_sales_count})
+    return render(request, 'main/cabinet.html', {'user_info': user_info, "user_sales_count": user_sales_count})
+
 
 @login_required(login_url="/")
-def change_profile(request):
+def change_profile(request: HttpRequest) -> HttpResponse:
     user_info = User.objects.get(id=request.user.id)
     if request.method == "POST":
         form = RegisterUserForm(request.POST or None, instance=user_info)
@@ -42,7 +43,8 @@ def change_profile(request):
     context = {"form": form}
     return render(request, "main/change_profile.html", context)
 
-def loginuser(request):
+
+def loginuser(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         username = request.POST["username"]
         password = request.POST["password"]
@@ -56,9 +58,9 @@ def loginuser(request):
             return render(request, "main/login.html")
     else:
         return render(request, "main/login.html")
-    
 
-def registry(request):
+
+def registry(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         form = RegisterUserForm(request.POST)
         if form.is_valid():
@@ -75,13 +77,14 @@ def registry(request):
 
 
 @login_required(login_url='/')
-def logoutuser(request):
+def logout_user(request: HttpRequest) -> HttpResponse:
     logout(request)
     messages.success(request, ("Вы вышли из аккаунта"))
     return redirect("home")
 
+
 @staff_member_required
-def create_ticket(request):
+def create_ticket(request: HttpRequest) -> HttpResponse:
     submitted = False
     if request.method == "POST":
         form = ticketForm(request.POST)
@@ -94,28 +97,34 @@ def create_ticket(request):
             submitted = True
     return render(request, "main/create.html", {"form": form, "submitted": submitted})
 
-def search_ticket(request):
+
+def search_ticket(request: HttpRequest) -> HttpResponse:
     if request.method == "GET":
         error = None
-        tickets = Tickets.objects.filter(name_origin = request.GET["origin"],name_dest = request.GET["dest"], date_origin = request.GET["date_travel"])
+        tickets = Tickets.objects.filter(
+            name_origin=request.GET["origin"], name_dest=request.GET["dest"], date_origin=request.GET["date_travel"]
+        )
         if not tickets:
             error = "Билетов на данную дату нет!"
         return render(request, "main/search.html", {"tickets": tickets, "error": error})
     if request.method == "POST":
         user_id = request.POST["user_id"]
         ticket_id = request.POST["ticket_id"]
-        sale = UsersSales.objects.create(user_id = user_id, ticket_id = ticket_id)
+        sale = UsersSales.objects.create(user_id=user_id, ticket_id=ticket_id)
         sale.save()
-        messages.success(request,("Ваша бронь успешно оформлена! В скором времени наша служба с вами свяжется для оплаты."))
+        messages.success(
+            request, ("Ваша бронь успешно оформлена! В скором времени наша служба с вами свяжется для оплаты.")
+        )
         return redirect("home")
-    
-def search_sales(request):
+
+
+def search_sales(request: HttpRequest) -> HttpResponse:
     if request.method == "POST":
         userssale_id = request.POST["sale_id"]
-        ticket_delete = UsersSales.objects.get(id = userssale_id)
+        ticket_delete = UsersSales.objects.get(id=userssale_id)
         if ticket_delete.user == request.user:
             ticket_delete.delete()
-            messages.success(request,("Ваша бронь успешно отменена!"))
+            messages.success(request, ("Ваша бронь успешно отменена!"))
             return redirect("sales")
     user_sales = UsersSales.objects.filter(user=request.user)
     waste = None
