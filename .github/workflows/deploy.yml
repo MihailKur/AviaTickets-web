@@ -7,11 +7,8 @@
 #
 #env:
 #  JOB_STARTED_AT: ${{ github.event.created_at }}
-#  CR_REGISTRY: ${{ secrets.CR_REGISTRY }}
-#  CR_IMAGE_BACKEND: ${{ secrets.CR_IMAGE_BACKEND }}
-#  CR_IMAGE_WORKER: ${{ secrets.CR_IMAGE_WORKER }}
-#  CR_IMAGE_FRONTEND: ${{ secrets.CR_IMAGE_FRONTEND }}
-#
+#  CR_REGISTRY: mihailkur
+#  CR_IMAGE_BACKEND: aviatickets
 #
 #jobs:
 #  build:
@@ -20,9 +17,7 @@
 #      - name: Checkout
 #        uses: actions/checkout@v3
 #      - name: Login to Registry
-#        uses: yc-actions/yc-cr-login@v1
-#        with:
-#          yc-sa-json-credentials: ${{ secrets.YC_SA_JSON_CREDENTIALS }}
+#        run: echo ${{ secrets.CR_TOKEN }} | docker login ghcr.io -u USERNAME --password-stdin
 #      - name: Build and Push Image Backend
 #        run: |
 #          docker build \
