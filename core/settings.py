@@ -12,10 +12,11 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
-
+from loguru import logger
 from dotenv import find_dotenv
 
-find_dotenv()
+env = find_dotenv()
+logger.info(env)
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -27,7 +28,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("BACKEND_SECRET_KEY", "V3ry_S3cr3t")
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.environ.get("DEBUG", False)
+DEBUG = os.environ.get("DEBUG", True)
 
 ALLOWED_HOSTS = []
 
@@ -81,9 +82,9 @@ WSGI_APPLICATION = 'core.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.environ.get("POSTGRES_DB", "aviatickets_db"),
-        'USER': os.environ.get("POSTGRES_USER", "postgres"),
-        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", "postgres"),
+        'NAME': os.environ.get("POSTGRES_DB", "aviatickets"),
+        'USER': os.environ.get("POSTGRES_USER", "admin"),
+        'PASSWORD': os.environ.get("POSTGRES_PASSWORD", "admin"),
         'HOST': os.environ.get("POSTGRES_SERVER", "localhost"),
         'PORT': 5432,
     }
