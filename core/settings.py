@@ -12,8 +12,9 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 
 import os
 from pathlib import Path
-from loguru import logger
+
 from dotenv import find_dotenv
+from loguru import logger
 
 env = find_dotenv()
 logger.info(env)
