@@ -7,7 +7,7 @@ on:
 
 env:
  JOB_STARTED_AT: ${{ github.event.created_at }}
- CR_REGISTRY: MihailKur
+ CR_REGISTRY: mihailkur
  CR_IMAGE_BACKEND: aviatickets
 
 jobs:
