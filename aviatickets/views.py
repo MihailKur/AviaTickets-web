@@ -101,9 +101,13 @@ def create_ticket(request: HttpRequest) -> HttpResponse:
 def search_ticket(request: HttpRequest) -> HttpResponse:
     if request.method == "GET":
         error = None
-        tickets = Tickets.objects.filter(
-            name_origin=request.GET["origin"], name_dest=request.GET["dest"], date_origin=request.GET["date_travel"]
-        )
+        name_origin = request.GET.get("origin")
+        name_dest = request.GET.get("dest")
+        date_origin = request.GET.get("date_travel")
+        if not date_origin:
+            tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest)
+        else:
+            tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest, date_origin=date_origin)
         if not tickets:
             error = "Билетов на данную дату нет!"
         return render(request, "main/search.html", {"tickets": tickets, "error": error})
