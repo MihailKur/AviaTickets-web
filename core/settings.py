@@ -31,9 +31,11 @@ SECRET_KEY = os.environ.get("BACKEND_SECRET_KEY", "V3ry_S3cr3t")
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.environ.get("DEBUG", True)
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
-
+CSRF_TRUSTED_ORIGINS = [
+    "https://aviatickets.onrender.com"
+]
 # Application definition
 
 INSTALLED_APPS = [

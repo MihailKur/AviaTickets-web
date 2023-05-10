@@ -84,14 +84,14 @@ class ticketForm(forms.ModelForm):
         localize=True,
     )
     date_origin = forms.DateField(
-        label="Время вылета",
+        label="Дата вылета",
         required=False,
         widget=DateInput(attrs={'type': 'date'}),
         initial=datetime.date.today(),
         localize=True,
     )
     date_dest = forms.DateField(
-        label="Время прилета",
+        label="Дата прилета",
         required=False,
         widget=DateInput(attrs={'type': 'date'}),
         initial=datetime.date.today(),
