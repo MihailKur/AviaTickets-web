@@ -5,6 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, HttpResponse, HttpResponseRedirect
 from django.shortcuts import redirect, render
 
+from datetime import date
+
 from .forms import *
 
 
@@ -18,6 +20,9 @@ def about_us(request: HttpRequest) -> HttpResponse:
 
 def sales(request: HttpRequest) -> HttpResponse:
     return render(request, 'main/sales.html')
+
+def maps(request: HttpRequest) -> HttpResponse:
+    return render(request, 'main/maps.html')
 
 
 def profile(request: HttpRequest) -> HttpResponse:
@@ -104,16 +109,31 @@ def search_ticket(request: HttpRequest) -> HttpResponse:
         name_origin = request.GET.get("origin")
         name_dest = request.GET.get("dest")
         date_origin = request.GET.get("date_travel")
-        if not date_origin:
-            tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest)
-        else:
-            tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest, date_origin=date_origin)
+
+        curr_date = date.today()
+        tickets = Tickets.objects.filter(name_origin=name_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
+
+        if name_origin and not name_dest and not date_origin:
+            # Вывод всех билетов из выбранного города вылета
+            tickets = Tickets.objects.filter(name_origin=name_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
+        elif name_origin and date_origin:
+            # Вывод всех билетов из выбранного города вылета на указанную дату
+            tickets = Tickets.objects.filter(name_origin=name_origin, date_origin=date_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
+        elif name_origin and name_dest:
+            # Вывод всех билетов из выбранного города вылета в выбранный город прилета
+            tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest, date_origin__gte=curr_date, avaible_seats__gt=0)
+        
         if not tickets:
-            error = "Билетов на данную дату нет!"
+            error = "Билетов нет!"
         return render(request, "main/search.html", {"tickets": tickets, "error": error})
     if request.method == "POST":
         user_id = request.POST["user_id"]
         ticket_id = request.POST["ticket_id"]
+
+        ticket = Tickets.objects.get(pk=ticket_id)
+        ticket.avaible_seats -=1
+        ticket.save()
+
         sale = UsersSales.objects.create(user_id=user_id, ticket_id=ticket_id)
         sale.save()
         messages.success(
@@ -128,6 +148,9 @@ def search_sales(request: HttpRequest) -> HttpResponse:
         ticket_delete = UsersSales.objects.get(id=userssale_id)
         if ticket_delete.user == request.user:
             ticket_delete.delete()
+            ticket = ticket_delete.ticket
+            ticket.avaible_seats += 1
+            ticket.save()
             messages.success(request, ("Ваша бронь успешно отменена!"))
             return redirect("sales")
     user_sales = UsersSales.objects.filter(user=request.user)
@@ -135,3 +158,12 @@ def search_sales(request: HttpRequest) -> HttpResponse:
     if not user_sales:
         waste = "У вас пока нет ни одной брони!"
     return render(request, "main/sales.html", {"user_sales": user_sales, "waste": waste, "user": request.user})
+
+def admin_panel(request: HttpRequest) -> HttpResponse:
+    users = User.objects.all()
+    if request.method == "POST":
+        user_id = request.POST["user_id"]
+        user_delete = User.objects.get(pk = user_id)
+        user_delete.delete()
+        return redirect('admin_panel')
+    return render(request, 'main/admin_panel.html', {'users': users})

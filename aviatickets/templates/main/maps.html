@@ -1,0 +1,129 @@
+{% extends 'main/layout.html' %}
+{% load static %}
+{%block title%}Карты аэропортов{%endblock%}
+{%block content%}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="mb-3">
+                <label for="cardSelect" class="form-label">Выберите карту:</label>
+                <select class="form-select" id="cardSelect" onchange="showImage()">
+                    <option selected disabled>Выберите карту...</option>
+                    <option value="map1">Внуково 1 этаж</option>
+                    <option value="map2">Внуково 2 этаж</option>
+                    <option value="map3">Домодедово 1 этаж</option>
+                    <option value="map4">Домодедово 2 этаж</option>
+                    <option value="map5">Шереметьево-В 1 этаж</option>
+                    <option value="map6">Шереметьево-В 2 этаж</option>
+                    <option value="map7">Шереметьево-В 3 этаж</option>
+                    <!-- Добавьте дополнительные опции по мере необходимости -->
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <div class="magnify" onmousemove="magnify(event)" onmousedown="startDrag(event)" onmouseup="stopDrag()">
+                <div class="image-container">
+                    <img src="" id="mapImage" class="img-fluid d-none" alt="Карта">
+                </div>
+                <div class="controls">
+                    <button class="btn btn-primary" onclick="zoomIn()">+</button>
+                    <button class="btn btn-primary" onclick="zoomOut()">-</button>
+                </div>
+            </div>
+        </div>
+    </div>
+<style>
+    .magnify {
+        position: relative;
+        width: 100%;
+        overflow: hidden;
+    }
+
+    .image-container {
+        position: relative;
+        display: inline-block;
+    }
+
+    .magnify img {
+        transition: transform 0.2s ease-out;
+    }
+
+    .controls {
+        position: absolute;
+        top: 50%;
+        right: 10px;
+        transform: translateY(-50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .controls button {
+        margin: 5px;
+    }
+</style>
+
+<script>
+    var zoom = 1;
+    var imgWidth, imgHeight;
+    var img = document.getElementById("mapImage");
+
+    function showImage() {
+        var selectedMap = document.getElementById("cardSelect").value;
+        img.src = selectedMap === "map1" ? "{% static 'img/VKO_1floor.png' %}" :
+                  selectedMap === "map2" ? "{% static 'img/VKO_2floor.png' %}" :
+                  selectedMap === "map3" ? "{% static 'img/DMO_1floor.png' %}" :
+                  selectedMap === "map4" ? "{% static 'img/DMO_2floor.png' %}" :
+                  selectedMap === "map5" ? "{% static 'img/SHR_1floor.png' %}" :
+                  selectedMap === "map6" ? "{% static 'img/SHR_2floor.png' %}" :
+                  selectedMap === "map7" ? "{% static 'img/SHR_3floor.png' %}" : "";
+
+        img.onload = function() {
+            imgWidth = img.width;
+            imgHeight = img.height;
+            img.classList.remove("d-none");
+        };
+    }
+
+    function magnify(event) {
+        if (isDragging) {
+            var scaleValue = 'scale(' + zoom + ')';
+            var posX = startLeft + event.clientX - startX;
+            var posY = startTop + event.clientY - startY;
+            var scalePosition = 'translate(' + posX + 'px,' + posY + 'px)';
+            img.style.transform = scaleValue + ' ' + scalePosition;
+        }
+    }
+
+    function startDrag() {
+        isDragging = true;
+        startX = event.clientX;
+        startY = event.clientY;
+        startLeft = img.offsetLeft;
+        startTop = img.offsetTop;
+    }
+
+    function stopDrag() {
+        isDragging = false;
+    }
+
+    function zoomIn() {
+        zoom += 0.1;
+        applyZoom();
+    }
+
+    function zoomOut() {
+        if (zoom > 0.2) {
+            zoom -= 0.1;
+            applyZoom();
+        }
+    }
+
+    function applyZoom() {
+        img.style.width = (imgWidth * zoom) + "px";
+        img.style.height = (imgHeight * zoom) + "px";
+    }
+</script>
+{%endblock%}

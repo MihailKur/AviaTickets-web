@@ -18,6 +18,8 @@ urlpatterns = [
     path('create', views.create_ticket, name="create"),
     path('search', views.search_ticket, name="search"),
     path('sales', views.search_sales, name="sales"),
+    path('admin_panel/', views.admin_panel, name='admin_panel'),
+    path('maps/', views.maps, name='maps'),
 ]
 
 if settings.DEBUG:

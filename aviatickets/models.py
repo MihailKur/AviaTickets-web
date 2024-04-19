@@ -26,6 +26,7 @@ class Tickets(models.Model):
     date_dest = models.DateField("Время прилета")
     ticket_price = models.IntegerField("Цена билета")
     type_of_flight = models.CharField("Тип перелета", choices=TYPE_OF_FLIGHT, max_length=100)
+    avaible_seats = models.IntegerField("Доступных мест")
 
     def __str__(self):
         return self.name_origin

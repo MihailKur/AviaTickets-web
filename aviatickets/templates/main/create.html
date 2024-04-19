@@ -12,7 +12,62 @@
     {% endif %}
     <form action="" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {{ form.as_p }}
+        <div class="mb-3">
+            <label for="id_name_origin" class="form-label">Город вылета</label>
+            <select name="name_origin" id="id_name_origin" class="form-select">
+                {% for choice in form.name_origin.field.choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="id_name_dest" class="form-label">Город прилета</label>
+            <select name="name_dest" id="id_name_dest" class="form-select">
+                {% for choice in form.name_dest.field.choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="id_name_origin_aero" class="form-label">Аэропорт вылета</label>
+            <input type="text" name="name_origin_aero" id="id_name_origin_aero" class="form-control" value="{{ form.name_origin_aero.value|default_if_none:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_name_dest_aero" class="form-label">Аэропорт прилета</label>
+            <input type="text" name="name_dest_aero" id="id_name_dest_aero" class="form-control" value="{{ form.name_dest_aero.value|default_if_none:'' }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_date_origin" class="form-label">Дата вылета</label>
+            <input type="date" name="date_origin" id="id_date_origin" class="form-control" value="{{ form.date_origin.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_time_origin" class="form-label">Время вылета</label>
+            <input type="time" name="time_origin" id="id_time_origin" class="form-control" value="{{ form.time_origin.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_date_dest" class="form-label">Дата прилета</label>
+            <input type="date" name="date_dest" id="id_date_dest" class="form-control" value="{{ form.date_dest.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_time_dest" class="form-label">Время прилета</label>
+            <input type="time" name="time_dest" id="id_time_dest" class="form-control" value="{{ form.time_dest.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_ticket_price" class="form-label">Цена билета</label>
+            <input type="number" name="ticket_price" id="id_ticket_price" class="form-control" value="{{ form.ticket_price.value }}">
+        </div>
+        <div class="mb-3">
+            <label for="id_type_of_flight" class="form-label">Тип перелета</label>
+            <select name="type_of_flight" id="id_type_of_flight" class="form-select">
+                {% for choice in form.type_of_flight.field.choices %}
+                    <option value="{{ choice.0 }}">{{ choice.1 }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="id_avaible_seats" class="form-label">Доступных мест</label>
+            <input type="number" name="avaible_seats" id="id_avaible_seats" class="form-control" value="{{ form.avaible_seats.value }}">
+        </div>
         <button type="submit" class="btn btn-success">Создать</button>
         <span>{{error}}</span>
     </form>

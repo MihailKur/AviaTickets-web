@@ -15,6 +15,7 @@
               <p class="card-text">Время и дата прилета: {{tick.date_dest}},<span>&#160;&#160;</span>{{tick.time_dest}}</p>
               <p class="card-text">Тип билета: {{tick.type_of_flight}}</p>
               <p class="card-text">Цена: {{tick.ticket_price}}</p>
+              <p class="card-text">Количество доступных мест: {{tick.avaible_seats}}</p>
               {% if user.is_authenticated%}
               <a href="#ticket-modal-{{ tick.id }}" class="btn btn-outline-info pd-1" data-bs-toggle="modal">Подтвердить</a>
               {%else%}
