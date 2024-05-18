@@ -114,13 +114,10 @@ def search_ticket(request: HttpRequest) -> HttpResponse:
         tickets = Tickets.objects.filter(name_origin=name_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
 
         if name_origin and not name_dest and not date_origin:
-            # Вывод всех билетов из выбранного города вылета
             tickets = Tickets.objects.filter(name_origin=name_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
         elif name_origin and date_origin:
-            # Вывод всех билетов из выбранного города вылета на указанную дату
             tickets = Tickets.objects.filter(name_origin=name_origin, date_origin=date_origin, date_origin__gte=curr_date, avaible_seats__gt=0)
         elif name_origin and name_dest:
-            # Вывод всех билетов из выбранного города вылета в выбранный город прилета
             tickets = Tickets.objects.filter(name_origin=name_origin, name_dest=name_dest, date_origin__gte=curr_date, avaible_seats__gt=0)
         
         if not tickets:

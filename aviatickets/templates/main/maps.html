@@ -1,7 +1,7 @@
 {% extends 'main/layout.html' %}
 {% load static %}
-{%block title%}Карты аэропортов{%endblock%}
-{%block content%}
+{% block title %}Карты аэропортов{% endblock %}
+{% block content %}
 <div class="container mt-5">
     <div class="row">
         <div class="col-md-6">
@@ -19,21 +19,39 @@
                     <!-- Добавьте дополнительные опции по мере необходимости -->
                 </select>
             </div>
-        </div>
-    </div>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="magnify" onmousemove="magnify(event)" onmousedown="startDrag(event)" onmouseup="stopDrag()">
-                <div class="image-container">
-                    <img src="" id="mapImage" class="img-fluid d-none" alt="Карта">
+            <div class="form-group">
+                <label for="search">Поиск на карте:</label>
+                <input type="text" id="search" class="form-control" oninput="searchPoint()" placeholder="Введите название выхода">
+            </div>
+            <ul id="search-results" class="list-group mb-3"></ul>
+            <label for="zones" class="form-label">Выберите интересующую вас зону:</label>
+            <div id="zones">
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="zone" id="registration" onclick="toggleZone('registration')">
+                    <label class="form-check-label" for="registration">Зона стойки регистрации</label>
                 </div>
-                <div class="controls">
-                    <button class="btn btn-primary" onclick="zoomIn()">+</button>
-                    <button class="btn btn-primary" onclick="zoomOut()">-</button>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="zone" id="departure" onclick="toggleZone('departure')">
+                    <label class="form-check-label" for="departure_1">Зона вылета (внутренний)</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="zone" id="departure" onclick="toggleZone('departure')">
+                    <label class="form-check-label" for="departure_2">Зона вылета (международный)</label>
+                </div>
+                <div class="form-check">
+                    <input type="radio" class="form-check-input" name="zone" id="shops" onclick="toggleZone('shops')">
+                    <label class="form-check-label" for="shops">Магазины</label>
                 </div>
             </div>
         </div>
+        <div class="col-md-6">
+            <div class="image-container position-relative">
+                <img src="" id="mapImage" alt="Карта" width="900" height="900">
+                <canvas id="map-canvas"></canvas>
+            </div>
+        </div>
     </div>
+</div>
 <style>
     .magnify {
         position: relative;
@@ -44,86 +62,198 @@
     .image-container {
         position: relative;
         display: inline-block;
+        width: 100%;
     }
 
-    .magnify img {
-        transition: transform 0.2s ease-out;
-    }
-
-    .controls {
+    #map-canvas {
         position: absolute;
-        top: 50%;
-        right: 10px;
-        transform: translateY(-50%);
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .controls button {
-        margin: 5px;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
     }
 </style>
-
 <script>
     var zoom = 1;
     var imgWidth, imgHeight;
     var img = document.getElementById("mapImage");
 
+    const mapData = {
+        map1: {
+            points: {
+                "8, 8A": { x: 50, y: 800, name: "Регистрация A" },
+                "9, 9A": { x: 100, y: 750, name: "Регистрация B" },
+            },
+            zones: {
+                registration: [
+                    { x: 20, y: 850, width: 200, height: 100 },
+                ],
+                departure_1: [
+                    { x: 300, y: 600, width: 200, height: 400 },
+                ],
+                departure_2: [
+                    { x: 300, y: 600, width: 200, height: 400 },
+                ],
+                shops: [
+                    { x: 600, y: 200, width: 300, height: 200 },
+                ],
+            }
+        },
+        map2: {
+            points: {
+                "10, 10A": { x: 465, y: 529, name: "Выход" },
+                "11, 11A": { x: 452, y: 457, name: "Выход" },
+                "12, 12A": { x: 413, y: 350, name: "Выход" },
+                "13, 13A": { x: 378, y: 298, name: "Выход" },
+                "14, 14A": { x: 348, y: 269, name: "Выход" },
+                "15, 15A": { x: 279, y: 285, name: "Выход" },
+                "16, 16A": { x: 309, y: 119, name: "Выход" },
+                "17, 17A": { x: 380, y: 422, name: "Выход" },
+                "18, 18A": { x: 446, y: 70, name: "Выход" },
+                "19, 19A": { x: 515, y: 155, name: "Выход" },
+                "20, 20A": { x: 585, y: 185, name: "Выход" },
+                "21, 21A": { x: 612, y: 210, name: "Выход" },
+                "22, 22A": { x: 639, y: 265, name: "Выход" },
+                "23, 23A": { x: 625, y: 270, name: "Выход" },
+                "24, 24A": { x: 610, y: 331, name: "Выход" },
+                "25, 25A": { x: 579, y: 495, name: "Выход" },
+                "26, 26A": { x: 570, y: 421, name: "Выход" },
+            },
+            zones: {
+                registration: [
+                    { x: 380, y: 740, width: 800, height: 120 },
+                ],
+                departure_1: [
+                    { x: 360, y: 450, width: 100, height: 600 },
+                ],
+                departure_2: [
+                    { x: 460, y: 550, width: 100, height: 600 },
+                ],
+                shops: [
+                    { x: 485, y: 550, width: 150, height: 100 },
+                ],
+            }
+        },
+    };
+
+    let currentMap = null;
+
     function showImage() {
         var selectedMap = document.getElementById("cardSelect").value;
         img.src = selectedMap === "map1" ? "{% static 'img/VKO_1floor.png' %}" :
-                  selectedMap === "map2" ? "{% static 'img/VKO_2floor.png' %}" :
+                  selectedMap === "map2" ? "{% static 'img/VKO_2fl.png' %}" :
                   selectedMap === "map3" ? "{% static 'img/DMO_1floor.png' %}" :
                   selectedMap === "map4" ? "{% static 'img/DMO_2floor.png' %}" :
                   selectedMap === "map5" ? "{% static 'img/SHR_1floor.png' %}" :
                   selectedMap === "map6" ? "{% static 'img/SHR_2floor.png' %}" :
                   selectedMap === "map7" ? "{% static 'img/SHR_3floor.png' %}" : "";
 
-        img.onload = function() {
-            imgWidth = img.width;
-            imgHeight = img.height;
-            img.classList.remove("d-none");
+                  img.onload = function() {
+                    imgWidth = img.width;
+                    imgHeight = img.height;
+                    img.classList.remove("d-none");
+
+            
+                    var canvas = document.getElementById("map-canvas");
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+            
+                    // Обновляем текущую карту
+                    currentMap = selectedMap;
+                    clearHighlights();
         };
     }
 
-    function magnify(event) {
-        if (isDragging) {
-            var scaleValue = 'scale(' + zoom + ')';
-            var posX = startLeft + event.clientX - startX;
-            var posY = startTop + event.clientY - startY;
-            var scalePosition = 'translate(' + posX + 'px,' + posY + 'px)';
-            img.style.transform = scaleValue + ' ' + scalePosition;
+    function searchPoint() {
+        const query = document.getElementById('search').value.toLowerCase();
+        const resultsContainer = document.getElementById('search-results');
+        resultsContainer.innerHTML = '';
+
+        if (!currentMap || !mapData[currentMap]) return;
+
+        let found = false;
+        const points = mapData[currentMap].points;
+
+        for (const point in points) {
+            if (points[point].name.toLowerCase().includes(query) || point.toLowerCase().includes(query)) {
+                const li = document.createElement('li');
+                li.classList.add('list-group-item');
+                li.textContent = `${point} - ${points[point].name}`;
+                li.onclick = () => selectPoint(point);
+                resultsContainer.appendChild(li);
+                found = true;
+            }
+        }
+
+        if (!found) {
+            const li = document.createElement('li');
+            li.classList.add('list-group-item');
+            li.textContent = "Такого нет";
+            resultsContainer.appendChild(li);
         }
     }
 
-    function startDrag() {
-        isDragging = true;
-        startX = event.clientX;
-        startY = event.clientY;
-        startLeft = img.offsetLeft;
-        startTop = img.offsetTop;
+    function selectPoint(point) {
+        if (!currentMap || !mapData[currentMap]) return;
+
+        document.getElementById('search').value = `${point} - ${mapData[currentMap].points[point].name}`;
+        document.getElementById('search-results').innerHTML = '';
+        highlightPoint(point);
     }
 
-    function stopDrag() {
-        isDragging = false;
+    function highlightPoint(point) {
+        if (!currentMap || !mapData[currentMap]) return;
+    
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        const location = mapData[currentMap].points[point];
+    
+        const rectWidth = 50; // Ширина 
+        const rectHeight = 13; // Высота
+    
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.beginPath();
+        ctx.rect(location.x - rectWidth / 2, location.y - rectHeight / 2, rectWidth, rectHeight); 
+        ctx.strokeStyle = 'blue';
+        ctx.stroke();
+    }
+    
+    function highlightZone(zone) {
+        if (!currentMap || !mapData[currentMap]) return;
+    
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        const zoneAreas = mapData[currentMap].zones[zone];
+    
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = 'rgba(192, 192, 192, 0.3)'; // Светлосерый цвет
+    
+        zoneAreas.forEach(area => {
+            ctx.fillRect(area.x, area.y, area.width, area.height);
+        });
     }
 
-    function zoomIn() {
-        zoom += 0.1;
-        applyZoom();
-    }
+    // Текущая выделенная зона
+    let currentZone = null;
 
-    function zoomOut() {
-        if (zoom > 0.2) {
-            zoom -= 0.1;
-            applyZoom();
+    function toggleZone(zone) {
+        const radio = document.getElementById(zone);
+
+        if (currentZone === zone) {
+            radio.checked = false;
+            clearHighlights();
+            currentZone = null;
+        } else {
+            currentZone = zone;
+            highlightZone(zone);
         }
     }
 
-    function applyZoom() {
-        img.style.width = (imgWidth * zoom) + "px";
-        img.style.height = (imgHeight * zoom) + "px";
+    function clearHighlights() {
+        const canvas = document.getElementById('map-canvas');
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
     }
 </script>
-{%endblock%}
+{% endblock %}
